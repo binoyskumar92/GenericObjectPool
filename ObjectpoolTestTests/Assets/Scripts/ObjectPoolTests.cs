@@ -24,7 +24,22 @@ namespace Tests
                 obj[i] = (Pool)pool.GetObjectFromPool();
                 Assert.AreEqual(obj[i].GetType(), typeof(Pool));
             }
-           
+        }
+        [TestMethod()]
+        public void ObjectPoolGrowTest()
+        {
+            //Pool grows by default
+            ObjectPool<Pool> pool = new ObjectPool<Pool>(typeof(Pool), 20, 40, true);
+            pool.destroyObjectsinPool();
+            
+            Pool obj = (Pool)pool.GetObjectFromPool();
+            Assert.AreEqual(obj.GetType(),typeof(Pool));
+
+            //Pool does not grow when pool does not have free objects
+            pool.destroyObjectsinPool();
+            pool.willGrow = false;
+            obj= (Pool)pool.GetObjectFromPool();
+            Assert.AreEqual(obj, null);
 
         }
 
