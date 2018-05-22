@@ -2,7 +2,7 @@
 This is a simple implementation of generic object pool for any kind of reference types. This includes GameObjects, Queues, Lists, Customclass objects etc. Following unity porjects helps to show an implementation of the generic object pool. All the c# script is in Asset->Scripts and the unit testcases in Asset->Scripts->Editor folder.
 Usage:
 1. Copy class ObjectPool.cs into your project from Asset->Scripts folder
-2. ObjectPool<T> pool = new ObjectPool<T>(<preallocatesize>, <maxpoolsize>, <new object[] { }>, <willgrow>); Use a class of your choice for T and provide necessary parameters for objectpool constructor.
+2. ObjectPool<T> pool = new ObjectPool<T>(< preallocatesize >, < maxpoolsize >, <new object[] { }>, < willgrow >); Use a class of your choice for T and provide necessary parameters for objectpool constructor.
 3. Use GetObjectFromPool() method to get an object from the pool
 4. Use AddBackToPool(T obj) method to add a used object back to pool.
 5. Use destroyObjectsinPool() to destroy all objects int the pool
