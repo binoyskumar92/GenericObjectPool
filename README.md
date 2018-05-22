@@ -9,5 +9,6 @@ Usage:
 6. In case of Gameobject pool, provide an optional parameter, a gameobject while initialising the pool whose clone will be created and stored in the pool.
 7. In case of GameObject type pool make sure to use the method InstantiateGameObjects() so as to initialise all gameobjects and store in pool. Else exception wil be thrown.
 8. All the unit tests for all scenarios are covered in ObjectPollTests.cs file in Asset->Scripts->Editor folder.
-9. For a live use of the object pool run the scene_one in unity. A set of cubes will be initialised and thorwn outwards in a loop.
+9. To run the testcases use Unity testrunner. In Unity Window->TestRunner and Run all.
+10. For a live use of the object pool run the scene_one in unity. A set of cubes will be initialised and thorwn outwards in a loop.
 
