@@ -5,55 +5,21 @@ using UnityEngine;
 
 public class PoolTester : MonoBehaviour {
 
-    // Use this for initialization
-
-
-    //   public ObjectPool<int> abc;
-    //   private void Awake()
-    //   {
-    //       abc = new ObjectPool<int>(typeof(int), 20,40, true);
-    //   }
-    //   void Start () {
-
-    //       StartCoroutine(destroyAfter(5));
-    //   }
-
-    //// Update is called once per frame
-    //void Update () {
-    //       if (abc.getNumberOfObjectsInPool() > 40)
-    //       {
-    //           abc.willGrow = false;
-    //       }
-    //       int obje = (abc.GetObjectFromPool()) != null ? (int)abc.GetObjectFromPool():0;
-
-    //       //StartCoroutine(waitAndRun(obje));
-
-    //       Debug.Log(obje + " : "+ abc.getNumberOfObjectsInPool());
-    //   }
-    //   public IEnumerator waitAndRun(int obje)
-    //   {
-    //       // WAIT FOR 3 SEC
-    //       yield return new WaitForSeconds(Time.deltaTime*2);
-    //       // RUN YOUR CODE HERE ...
-    //       abc.AddBackToPool(obje);
-    //   }
-    //   public IEnumerator destroyAfter(int seconds)
-    //   {
-    //       // WAIT FOR 3 SEC
-    //       yield return new WaitForSeconds(seconds);
-    //       // RUN YOUR CODE HERE ...
-    //       abc.destroyObjectsinPool();
-    //   }
-
+   
     public GameObject poolobject;
     public float upForce = 1f;
     public float sideForce = 0.1f;
     ObjectPool<GameObject> pool;
+    ObjectPool<Pool> pool2;
     Queue<int> a;
     private void Awake()
     {
       pool = new ObjectPool<GameObject>(20, 40,new object[]{ }, true, poolobject);
       pool.InstantiateGameObjects();
+
+        pool2 = new ObjectPool<Pool>(20, 40, new object[] { }, true, null);
+        Debug.Log("Is grow: "+pool2.willGrow);
+
     }
     private void Update()
     {
