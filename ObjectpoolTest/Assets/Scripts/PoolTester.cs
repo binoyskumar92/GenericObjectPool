@@ -10,16 +10,11 @@ public class PoolTester : MonoBehaviour {
     public float upForce = 1f;
     public float sideForce = 0.1f;
     ObjectPool<GameObject> pool;
-    ObjectPool<Pool> pool2;
     Queue<int> a;
     private void Awake()
     {
-      pool = new ObjectPool<GameObject>(20, 40,new object[]{ }, true, poolobject);
+      pool = new ObjectPool<GameObject>(20, 400,new object[]{ }, true, poolobject);
       pool.InstantiateGameObjects();
-
-        pool2 = new ObjectPool<Pool>(20, 40, new object[] { }, true, null);
-        Debug.Log("Is grow: "+pool2.willGrow);
-
     }
     private void Update()
     {
@@ -36,19 +31,8 @@ public class PoolTester : MonoBehaviour {
             obj.transform.position = new Vector3(0f, 0f, 0f);
             obj.GetComponent<Rigidbody>().velocity = force;
             Debug.Log("PoolSize: " + pool.getNumberOfObjectsInPool());
-            StartCoroutine(AddBackToPosol(obj, 2f));
+            StartCoroutine(AddBackToPosol(obj, 15f));
         }
-
-        //if (obj != null && !obj.Equals(default(GameObject)))
-        //{
-        //    Instantiate(obj);
-        //    obj.SetActive(true);
-        //    obj.GetComponent<Rigidbody>().velocity = force;
-        //    //  StartCoroutine(AddBackToPosol(obj, 2f));
-
-        //}
-
-
     }
     IEnumerator AddBackToPosol(GameObject poolobject, float delayTime)
     {

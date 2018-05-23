@@ -6,54 +6,52 @@ using UnityEngine;
 
 public class ObjectPool<T> where T : class
 {
-    /*  pooledObject - GameObject if to be instatiated [optional]
-        objectsToPreAllocate - Number of Objects in pool to be preallocated
-        maxNumberOfObjects - Max size of pool can grow upto
-        extrObjectsCount; -  how much pool can grow extra from preallocated size
+    /*  _pooledObject - GameObject if to be instatiated [optional]
+        _objectsToPreAllocate - Number of Objects in pool to be preallocated
+        _maxNumberOfObjects - Max size of pool can grow upto
+        _extrObjectsCount; -  how much pool can grow extra from preallocated size
         willGrow = true - boolean to toggle if pool grows to max size 
-        pooledObjects -   Queue which keeps all the queued objects
-        ObjectType - type of T at runtime
-        parameters - additional parameters for new object creation
+        _pooledObjects -   Queue which keeps all the queued objects
+        _objectType - type of T at runtime
+        _parameters - additional _parameters for new object creation
      */
-    private T pooledObject;
-    private int objectsToPreAllocate = 20;
-    private int maxNumberOfObjects;
-    private int extrObjectsCount;
-    public bool willGrow = true;
-    private bool gameObjectsInitialised = false;
-    private Queue<T> pooledObjects;
-    private Type ObjectType;
-    private object[] parameters;
+    private T _pooledObject;
+    private int _objectsToPreAllocate;
+    public int _maxNumberOfObjects;
+    private int _extrObjectsCount;
+    private bool _gameObjectsInitialised = false;
+    private Queue<T> _pooledObjects;
+    private Type _objectType;
+    private object[] _parameters;
 
-    public bool destroyInProgress { get; private set; }
+    public bool _destroyInProgress { get; private set; }
 
     public ObjectPool(int objectsToPreAllocate, int maxNumberOfObjects, object[] parameters, bool willGrow, GameObject poolobj = null)
     {
 
-        this.objectsToPreAllocate = objectsToPreAllocate;
-        this.maxNumberOfObjects = maxNumberOfObjects;
-        this.parameters = parameters;
-        this.willGrow = willGrow;
-        this.ObjectType = typeof(T);
-        this.destroyInProgress = false;
-        extrObjectsCount = maxNumberOfObjects - objectsToPreAllocate;
+        _objectsToPreAllocate = objectsToPreAllocate;
+        _maxNumberOfObjects = maxNumberOfObjects;
+        _parameters = parameters;
+        _objectType = typeof(T);
+        _destroyInProgress = false;
+        _extrObjectsCount = _maxNumberOfObjects - _objectsToPreAllocate;
 
         if (poolobj != null)
         {
-            this.pooledObject = poolobj as T;
+            this._pooledObject = poolobj as T;
         }
 
         // Queue which keeps all the queued objects
-        pooledObjects = new Queue<T>();
-        for (int i = 0; i < this.objectsToPreAllocate; i++)
+        _pooledObjects = new Queue<T>();
+        for (int i = 0; i < this._objectsToPreAllocate; i++)
         {
-            if (ObjectType == typeof(GameObject))
+            if (_objectType == typeof(GameObject))
             {
-                pooledObjects.Enqueue(pooledObject);
+                _pooledObjects.Enqueue(_pooledObject);
             }
             else
             {
-                pooledObjects.Enqueue(createGenericObject());
+                _pooledObjects.Enqueue(createGenericObject());
             }
         }
     }
@@ -66,20 +64,20 @@ public class ObjectPool<T> where T : class
         try
         {
             //no need to create an  instance of gameobjects instead instantiate one object reference
-            if (ObjectType == typeof(GameObject))
+            if (_objectType == typeof(GameObject))
             {
-                GameObject gameobject = GameObject.Instantiate(pooledObject as GameObject);
+                GameObject gameobject = GameObject.Instantiate(_pooledObject as GameObject);
                 gameobject.SetActive(true);
                 return gameobject as T;
             }
-            if (parameters.Length > 0)
+            if (_parameters.Length > 0)
             {
-                obj = (T)Activator.CreateInstance(ObjectType, parameters);
+                obj = (T)Activator.CreateInstance(_objectType, _parameters);
 
             }
             else
             {
-                obj = (T)Activator.CreateInstance(ObjectType);
+                obj = (T)Activator.CreateInstance(_objectType);
             }
             return obj;
         }
@@ -94,38 +92,39 @@ public class ObjectPool<T> where T : class
     //method to instantiate game object pool
     public void InstantiateGameObjects()
     {
-        if (ObjectType != typeof(GameObject))
+        if (_objectType != typeof(GameObject))
         {
             throw new Exception("Method can be invoked only for pool type GameObject");
         }
         else
         {
-            for (int i = 0; i < pooledObjects.Count; i++)
+            for (int i = 0; i < _pooledObjects.Count; i++)
             {
-                GameObject obj = GameObject.Instantiate(pooledObjects.Dequeue() as GameObject);
+                GameObject obj = GameObject.Instantiate(_pooledObjects.Dequeue() as GameObject);
                 obj.SetActive(false);
-                pooledObjects.Enqueue(obj as T);
+                _pooledObjects.Enqueue(obj as T);
             }
-            gameObjectsInitialised = true;
+            _gameObjectsInitialised = true;
         }
     }
 
     //method to get an object from pool
     public T GetObjectFromPool()
     {
-        if (ObjectType == typeof(GameObject) && !gameObjectsInitialised)
+        if (_objectType == typeof(GameObject) && !_gameObjectsInitialised)
         {
             throw new Exception("Please initialize gameobjects using InstantiateGameObjects method on pool reference");
         }
 
-        if (getNumberOfObjectsInPool() > 0 && !destroyInProgress)
+        if (getNumberOfObjectsInPool() > 0 && !_destroyInProgress)
         {
-            T obj = pooledObjects.Dequeue(); ;
+            T obj = _pooledObjects.Dequeue(); ;
             return obj;
         }
-        else if (willGrow && extrObjectsCount > 0 && !destroyInProgress)
+        else if (_extrObjectsCount > 0 && !_destroyInProgress)
         {
-            extrObjectsCount--;
+            _extrObjectsCount--;
+            Debug.Log("Pool count: " + _extrObjectsCount);
             return createGenericObject();
 
         }
@@ -140,9 +139,9 @@ public class ObjectPool<T> where T : class
     //method to add object back to pool
     public void AddBackToPool(T returningObject)
     {
-        if (!returningObject.Equals(null) && getNumberOfObjectsInPool() < maxNumberOfObjects && !destroyInProgress)
+        if (!returningObject.Equals(null) && getNumberOfObjectsInPool() < _maxNumberOfObjects && !_destroyInProgress)
         {
-            pooledObjects.Enqueue(returningObject);
+            _pooledObjects.Enqueue(returningObject);
         }
 
     }
@@ -150,18 +149,18 @@ public class ObjectPool<T> where T : class
     //method to get count of objects currently in pool
     public int getNumberOfObjectsInPool()
     {
-        return pooledObjects.Count;
+        return _pooledObjects.Count;
     }
 
     //method to destroy object sin pool
     public void destroyObjectsinPool()
     {
-        destroyInProgress = true;
+        _destroyInProgress = true;
         while (getNumberOfObjectsInPool() > 0)
         {
-            pooledObjects.Dequeue();
+            _pooledObjects.Dequeue();
         }
-        destroyInProgress = false;
+        _destroyInProgress = false;
     }
 
 

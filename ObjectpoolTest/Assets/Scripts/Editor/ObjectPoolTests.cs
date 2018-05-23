@@ -32,7 +32,7 @@ public class ObjectPoolTests
 
         //Pool does not grow when pool does not have free objects and willgrow=false
         pool.destroyObjectsinPool();
-        pool.willGrow = false;
+        pool._maxNumberOfObjects = 0;
         obj = (Pool)pool.GetObjectFromPool();
         Assert.AreEqual(obj, null);
 
