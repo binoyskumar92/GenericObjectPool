@@ -2,51 +2,60 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Simple class to test the working of Generic object pool
+/// </summary>
+public class PoolTester : MonoBehaviour
+{
 
-public class PoolTester : MonoBehaviour {
-
-   
-    public GameObject poolobject;
-    public float upForce = 1f;
-    public float sideForce = 0.1f;
+    public GameObject _poolobject;
+    public float _upForce = 1f;
+    public float _sideForce = 0.1f;
     ObjectPool<GameObject> _pool;
     Queue<int> a;
+
     private void Awake()
     {
-   
-        _pool = new ObjectPool<GameObject>(20,400, SimpleConstructor);
-    }
-    public GameObject makeObject()
-    {
-        Debug.Log("Inside make");
-        return poolobject;
-    }
-
-    public GameObject SimpleConstructor()
-    {
-        GameObject obj = GameObject.Instantiate(poolobject);
-        obj.SetActive(false);
-        return obj;
+        _pool = new ObjectPool<GameObject>(20, 400, SimpleGameObjectConstructor);
     }
 
     private void Update()
     {
-
-        float xForce = Random.Range(-sideForce, sideForce);
-        float yForce = Random.Range(upForce/2f, upForce);
-        float zForce = Random.Range(-sideForce, sideForce);
-
+        //Generates a random force for 3 axis
+        float xForce = Random.Range(-_sideForce, _sideForce);
+        float yForce = Random.Range(_upForce / 2f, _upForce);
+        float zForce = Random.Range(-_sideForce, _sideForce);
         Vector3 force = new Vector3(xForce, yForce, zForce);
+
+        //Now get an object from pool and apply the force on the rigidbody component
         GameObject obj = _pool.GetObjectFromPool();
-        if (obj != null && !obj.Equals(default(GameObject)))
+        if (obj != null)
         {
             obj.SetActive(true);
             obj.transform.position = new Vector3(0f, 0f, 0f);
             obj.GetComponent<Rigidbody>().velocity = force;
-            Debug.Log("PoolSize: " + _pool.GetNumberOfObjectsInPool());
-            StartCoroutine(AddBackToPosol(obj, 15f));
+            // Add object back to pool after an interval of 12s. Modify this to see the effect of growing pool
+            StartCoroutine(AddBackToPosol(obj, 12f));
         }
     }
+
+    /// <summary>
+    /// Method that helps in creating a gameobject
+    /// </summary>
+    /// <returns></returns>
+    public GameObject SimpleGameObjectConstructor()
+    {
+        GameObject obj = GameObject.Instantiate(_poolobject);
+        obj.SetActive(false);
+        return obj;
+    }
+
+    /// <summary>
+    /// Helper method to add objects back to pool after an interval
+    /// </summary>
+    /// <param name="poolobject">Object to be added back to pool</param>
+    /// <param name="delayTime">Interval after which objects need to be added back to pool</param>
+    /// <returns></returns>
     IEnumerator AddBackToPosol(GameObject poolobject, float delayTime)
     {
         yield return new WaitForSeconds(delayTime);

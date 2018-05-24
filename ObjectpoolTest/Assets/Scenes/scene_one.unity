@@ -205,9 +205,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f987a5a87d02aa48b2f0477a780f23a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  poolobject: {fileID: 1257024179}
-  upForce: 1
-  sideForce: 0.1
+  _poolobject: {fileID: 1257024179}
+  _upForce: 1
+  _sideForce: 0.1
 --- !u!1001 &1257024178
 Prefab:
   m_ObjectHideFlags: 0

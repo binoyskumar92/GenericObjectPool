@@ -1,33 +1,29 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using UnityEngine;
 
+/// <summary>
+/// A Generic Object Pool class
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class ObjectPool<T> where T : class
 {
-    /*  _pooledObject - GameObject if to be instatiated [optional]
-        _objectsToPreAllocate - Number of Objects in pool to be preallocated
-        _maxNumberOfObjects - Max size of pool can grow upto
-        _extrObjectsCount; -  how much pool can grow extra from preallocated size
-        willGrow = true - boolean to toggle if pool grows to max size 
-        _pooledObjects -   Queue which keeps all the queued objects
-        _objectType - type of T at runtime
-        _parameters - additional _parameters for new object creation
-     */
     private int _objectsToPreAllocate;
     public int _maxNumberOfObjects;
     private int _extrObjectsCount;
     private Queue<T> _pooledObjects;
     private Func<T> _factoryMethod;
 
-    public ObjectPool(int objectsToPreAllocate, int maxNumberOfObjects,Func<T> func)
+    /// <summary>
+    /// Constructor for creating a generic ObjectPool
+    /// </summary>
+    /// <param name="objectsToPreAllocate">Specifies the number of objects that needs to be allocated to pool on creation</param>
+    /// <param name="maxNumberOfObjects">Specifies maximum number to which pool can be grown</param>
+    /// <param name="func">A constructor or a method that returns the actual object that need to be stored in the pool</param>
+    public ObjectPool(int objectsToPreAllocate, int maxNumberOfObjects, Func<T> func)
     {
-        
         _objectsToPreAllocate = objectsToPreAllocate;
-        _maxNumberOfObjects = maxNumberOfObjects;
-        _factoryMethod= func;       
-        _extrObjectsCount = _maxNumberOfObjects - _objectsToPreAllocate;
+        SetMaxNumberOfObjects(maxNumberOfObjects);
+        _factoryMethod = func;
 
         // Queue which keeps all the queued objects
         _pooledObjects = new Queue<T>();
@@ -43,52 +39,61 @@ public class ObjectPool<T> where T : class
         }
     }
 
-    //method to get an object from pool
+    /// <summary>
+    /// Method to get/retrieve an object stored in pool
+    /// </summary>
+    /// <returns>An object stored in pool</returns>
     public T GetObjectFromPool()
     {
         T genericObject = null;
         if (GetNumberOfObjectsInPool() > 0)
         {
             genericObject = _pooledObjects.Dequeue(); ;
-            
-        }else if (_extrObjectsCount > 0)
+
+        }
+        else if (_extrObjectsCount > 0)
         {
-            try
-            {
-                genericObject = _factoryMethod.Invoke();
-                _extrObjectsCount--;
-                Debug.Log("Objects that can be grown: "+_extrObjectsCount);
-            }
-            catch(Exception e)
-            {
-                Debug.Log("Error in creating a generic object while pool is growing: "+e.Message);
-            }
+            genericObject = _factoryMethod.Invoke();
+            _extrObjectsCount--;
         }
         return genericObject;
 
     }
 
-    //method to add object back to pool
+    /// <summary>
+    /// Method to add an object back to pool
+    /// </summary>
+    /// <param name="returningObject">Object passed to be added back to pool</param>
     public void AddBackToPool(T returningObject)
     {
-        if (!returningObject.Equals(null) && GetNumberOfObjectsInPool() < _maxNumberOfObjects)
+        if (!returningObject.Equals(null) && GetNumberOfObjectsInPool() < _maxNumberOfObjects && returningObject.GetType().Equals(typeof(T)))
         {
             _pooledObjects.Enqueue(returningObject);
         }
 
     }
 
-    //method to get count of objects currently in pool
+    /// <summary>
+    /// Method to find how many objects are there currently in pool
+    /// </summary>
+    /// <returns>Number of objects</returns>
     public int GetNumberOfObjectsInPool()
     {
         return _pooledObjects.Count;
     }
 
-    //method to destroy object sin pool
+    /// <summary>
+    /// Destroys all objects in pool
+    /// </summary>
     public void DestroyObjectsinPool()
     {
         _pooledObjects.Clear();
     }
+
+    /// <summary>
+    /// Set maximum number of objects a pool can hold. This helps in setting if the pool can grow or not. If objectstopreallocate &lt; maximum objects pool will not grow
+    /// </summary>
+    /// <param name="maxObjects">Maximum number of objects pool can hold</param>
     public void SetMaxNumberOfObjects(int maxObjects)
     {
         _maxNumberOfObjects = maxObjects;

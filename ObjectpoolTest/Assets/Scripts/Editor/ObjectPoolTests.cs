@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
-using UnityEditor;
-using UnityEngine.TestTools;
 using NUnit.Framework;
-using System.Collections;
 using System;
 
 public class ObjectPoolTests
@@ -12,7 +9,7 @@ public class ObjectPoolTests
     public void GetObjectFromPoolTest()
     {
 
-        ObjectPool<Pool> pool = new ObjectPool<Pool>(20, 40, ()=>new Pool(1,'b') ); 
+        ObjectPool<Pool> pool = new ObjectPool<Pool>(20, 40, () => new Pool(1, 'b'));
         Pool[] obj = new Pool[20];
         for (int i = 0; i < 20; i++)
         {
@@ -25,6 +22,7 @@ public class ObjectPoolTests
     {
         //Pool grows by default if willgrouw=true
         ObjectPool<Pool> pool = new ObjectPool<Pool>(20, 40, () => new Pool(1, 'b'));
+
         pool.DestroyObjectsinPool();
 
         Pool obj = (Pool)pool.GetObjectFromPool();
@@ -43,7 +41,7 @@ public class ObjectPoolTests
     {
         try
         {
-            ObjectPool<Pool> pool = new ObjectPool<Pool>(20, 40, () => new Pool(1, 'b')); 
+            ObjectPool<Pool> pool = new ObjectPool<Pool>(20, 40, () => new Pool(1, 'b'));
             Assert.AreEqual(pool.GetNumberOfObjectsInPool(), 20);
         }
         catch (Exception e)
@@ -91,22 +89,14 @@ public class ObjectPoolTests
     }
 
     [Test]
-    public void objectPoll2()
+    public void GameObjectPoolTest()
     {
-        ObjectPool<Pool> pool = new ObjectPool<Pool>(20, 40, () => new Pool(10, 'a'));
-        Pool obj = (Pool)pool.GetObjectFromPool();
-        Assert.AreEqual(obj.a, 10);
-        Assert.AreEqual(obj.b, 'a');
-    }
-    [Test]
-    public void objectPoll3()
-    {
-        ObjectPool<GameObject> pool = new ObjectPool<GameObject>(20, 40, SimpleConstructor);
+        ObjectPool<GameObject> pool = new ObjectPool<GameObject>(20, 40, SimpleGameObjectConstructor);
         GameObject obj = (GameObject)pool.GetObjectFromPool();
         Assert.AreEqual(obj.GetType(), typeof(GameObject));
-     
+
     }
-    public GameObject SimpleConstructor()
+    public GameObject SimpleGameObjectConstructor()
     {
         GameObject obj = GameObject.Instantiate(GameObject.CreatePrimitive(PrimitiveType.Plane));
         obj.SetActive(false);

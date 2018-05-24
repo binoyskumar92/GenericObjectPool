@@ -9,7 +9,7 @@ public class Pool
     public Pool(int a, char b)
     {
         this.a = a;
-        this.b = b; 
+        this.b = b;
     }
     public Pool()
     {
