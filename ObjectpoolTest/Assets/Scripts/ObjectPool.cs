@@ -7,11 +7,31 @@ using System.Collections.Generic;
 /// <typeparam name="T"></typeparam>
 public class ObjectPool<T> where T : class
 {
+    /// <summary>
+    /// Number of objects that needs to be preallocated in pool when pool is created
+    /// </summary>
     private int _objectsToPreAllocate;
-    public int _maxNumberOfObjects;
+
+    /// <summary>
+    /// Maximum number of objects that pool can hold at any time 
+    /// </summary>
+    private int _maxNumberOfObjects;
+
+    /// <summary>
+    /// Number of extra objects that can be grown other than that was preallocated
+    /// </summary>
     private int _extrObjectsCount;
+
+    /// <summary>
+    /// Queue which holds all the objects in pool.
+    /// </summary>
     private Queue<T> _pooledObjects;
+
+    /// <summary>
+    /// Factory method which helps in creating an object that need to be stored in pool.
+    /// </summary>
     private Func<T> _factoryMethod;
+  
 
     /// <summary>
     /// Constructor for creating a generic ObjectPool
@@ -46,11 +66,13 @@ public class ObjectPool<T> where T : class
     public T GetObjectFromPool()
     {
         T genericObject = null;
+        //Pool already has free objects
         if (GetNumberOfObjectsInPool() > 0)
         {
             genericObject = _pooledObjects.Dequeue(); ;
 
         }
+        // Pool doesnt have free objects but it can grow as _maxNumberOfObjects > _objectsToPreAllocate
         else if (_extrObjectsCount > 0)
         {
             genericObject = _factoryMethod.Invoke();
@@ -66,6 +88,7 @@ public class ObjectPool<T> where T : class
     /// <param name="returningObject">Object passed to be added back to pool</param>
     public void AddBackToPool(T returningObject)
     {
+        // Checking if returning object is not null, current size of pool not greater than_maxNumberOfObjects and returning object type is same as pool type
         if (!returningObject.Equals(null) && GetNumberOfObjectsInPool() < _maxNumberOfObjects && returningObject.GetType().Equals(typeof(T)))
         {
             _pooledObjects.Enqueue(returningObject);
@@ -91,7 +114,7 @@ public class ObjectPool<T> where T : class
     }
 
     /// <summary>
-    /// Set maximum number of objects a pool can hold. This helps in setting if the pool can grow or not. If objectstopreallocate &lt; maximum objects pool will not grow
+    /// Set maximum number of objects a pool can hold. This helps in setting if the pool can grow or not. If _maxNumberOfObjects &lt; _objectsToPreAllocate   will not grow
     /// </summary>
     /// <param name="maxObjects">Maximum number of objects pool can hold</param>
     public void SetMaxNumberOfObjects(int maxObjects)

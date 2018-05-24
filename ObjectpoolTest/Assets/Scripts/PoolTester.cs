@@ -12,8 +12,7 @@ public class PoolTester : MonoBehaviour
     public float _upForce = 1f;
     public float _sideForce = 0.1f;
     ObjectPool<GameObject> _pool;
-    Queue<int> a;
-
+ 
     private void Awake()
     {
         _pool = new ObjectPool<GameObject>(20, 400, SimpleGameObjectConstructor);
