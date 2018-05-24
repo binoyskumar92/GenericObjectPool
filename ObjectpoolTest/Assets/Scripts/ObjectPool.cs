@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// A Generic Object Pool class
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class ObjectPool<T> where T : class
+public class ObjectPool<T> 
 {
     /// <summary>
     /// Number of objects that needs to be preallocated in pool when pool is created
@@ -51,7 +51,7 @@ public class ObjectPool<T> where T : class
         for (int i = 0; i < _objectsToPreAllocate; i++)
         {
             genericObject = _factoryMethod.Invoke();
-            if (genericObject != null)
+            if (!genericObject.Equals(default(T)))
             {
                 _pooledObjects.Enqueue(genericObject);
             }
@@ -65,7 +65,7 @@ public class ObjectPool<T> where T : class
     /// <returns>An object stored in pool</returns>
     public T GetObjectFromPool()
     {
-        T genericObject = null;
+        T genericObject = default(T);
         //Pool already has free objects
         if (GetNumberOfObjectsInPool() > 0)
         {
@@ -89,7 +89,7 @@ public class ObjectPool<T> where T : class
     public void AddBackToPool(T returningObject)
     {
         // Checking if returning object is not null, current size of pool not greater than_maxNumberOfObjects and returning object type is same as pool type
-        if (!returningObject.Equals(null) && GetNumberOfObjectsInPool() < _maxNumberOfObjects && returningObject.GetType().Equals(typeof(T)))
+        if (!returningObject.Equals(default(T)) && GetNumberOfObjectsInPool() < _maxNumberOfObjects && returningObject.GetType().Equals(typeof(T)))
         {
             _pooledObjects.Enqueue(returningObject);
         }
